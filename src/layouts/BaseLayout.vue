@@ -2,7 +2,9 @@
   <div class="h-full pb-10">
     <TheNavbar />
     <div class="mt-20 w-full flex flex-col items-center mb-2">
-      <slot name="title"></slot>
+      <div class="w-11/12">
+        <slot name="title"></slot>
+      </div>
       <div class="content">
         <slot name="content"></slot>
       </div>

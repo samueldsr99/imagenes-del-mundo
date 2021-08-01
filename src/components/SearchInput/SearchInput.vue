@@ -1,8 +1,15 @@
 <template>
   <div class="container">
-    <input spellcheck="false" type="text" class="input" v-bind="$attrs" />
+    <input
+      spellcheck="false"
+      type="text"
+      class="input"
+      v-model="model"
+      @keypress="onPressEnter"
+      v-bind="$attrs"
+    />
     <div class="absolute inset-y-0 right-0 flex items-center">
-      <button class="search-button">
+      <button class="search-button" @click="onClick">
         <SearchIcon class="w-5 h-5 text-gray-400" />
       </button>
     </div>
@@ -15,7 +22,19 @@ import { SearchIcon } from '@heroicons/vue/solid'
 export default {
   name: 'SearchInput',
   components: { SearchIcon },
-  inheritAttrs: false
+  inheritAttrs: false,
+  props: {
+    onClick: {
+      type: Function,
+      default: function() {}
+    },
+    model: String
+  },
+  methods: {
+    onPressEnter(key) {
+      key.code === 'Enter' && this.onClick()
+    }
+  }
 }
 </script>
 

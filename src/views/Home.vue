@@ -3,7 +3,11 @@
     <template v-slot:title>
       <div class="flex flex-col items-center">
         <div class="lg:w-1/2 sm:w-full">
-          <SearchInput placeholder="Buscar en la web..." />
+          <SearchInput
+            v-model="keyword"
+            placeholder="Buscar en la web..."
+            :onClick="search"
+          />
         </div>
       </div>
     </template>
@@ -21,30 +25,12 @@
 </template>
 
 <script>
+import {ref} from 'vue'
 import BaseLayout from '@/layouts'
 import SearchInput from '@/components/SearchInput'
 import ImageCard from '@/components/ImageCard'
 
-const images = [
-  {
-    id: 1,
-    name: 'John Doe',
-    points: 12,
-    imageUrl: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80'
-  },
-  {
-    id: 2,
-    name: 'Thomas Thompson',
-    points: 17,
-    imageUrl: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80'
-  },
-  {
-    id: 3,
-    name: 'Chloe Mountain',
-    points: 3,
-    imageUrl: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80'
-  },
-]
+import { fetchImages } from "../services";
 
 export default {
   components: {
@@ -53,7 +39,32 @@ export default {
     ImageCard
   },
   setup() {
-    return { images }
+    const images = ref([])
+
+    return {
+      images,
+      keyword: ''
+    }
+  },
+  methods: {
+    search() {
+      fetchImages(this.keyword, 3)
+        .then(result => {
+          console.log(result)
+          this.images = result.map(r => {
+            return {
+              id: r.id,
+              imageUrl: r.urls.regular,
+              name: 'Samuel David',
+              points: 12
+            }
+          })
+        })
+        .catch(e => console.error(e))
+    }
+  },
+  computed: {
+    resultsAmount() { return this.images.length }
   }
 }
 </script>

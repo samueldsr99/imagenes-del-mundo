@@ -9,8 +9,12 @@
     </template>
     <template v-slot:content>
       <div class="images-container">
-        <ImageCard />
-        <ImageCard />
+        <ImageCard
+          v-for="image in images" :key="image.id"
+          :name="image.name"
+          :points="image.points"
+          :imageUrl="image.imageUrl"
+        />
       </div>
     </template>
   </BaseLayout>
@@ -21,11 +25,35 @@ import BaseLayout from '@/layouts'
 import SearchInput from '@/components/SearchInput'
 import ImageCard from '@/components/ImageCard'
 
+const images = [
+  {
+    id: 1,
+    name: 'John Doe',
+    points: 12,
+    imageUrl: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80'
+  },
+  {
+    id: 2,
+    name: 'Thomas Thompson',
+    points: 17,
+    imageUrl: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80'
+  },
+  {
+    id: 3,
+    name: 'Chloe Mountain',
+    points: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80'
+  },
+]
+
 export default {
   components: {
     BaseLayout,
     SearchInput,
     ImageCard
+  },
+  setup() {
+    return { images }
   }
 }
 </script>

@@ -7,16 +7,16 @@
     enterTo="translate-y-0 opacity-100 sm:translate-x-0"
   >
     <div class="root">
-      <img :src="person.imageUrl" class="w-full h-80 rounded-2xl mx-auto object-cover" />
+      <img :src="imageUrl" class="w-full h-80 rounded-2xl mx-auto object-cover" />
       <div class="flex justify-center items-center">
         <div class="absolute top-64 h-28 bg-white w-11/12 rounded-md px-4 py-4 shadow-xl">
           <div class="h-full flex flex-col justify-between items-center">
             <div class="w-full">
-              <span class="name">{{ person.name }}</span>
+              <span class="name">{{ name }}</span>
             </div>
             <div class="w-full">
               <div class="float-right flex flex-row items-center gap-3">
-                <span class="points">{{ person.points }}</span>
+                <span class="points">{{ points }}</span>
                 <button type="button" class="upvote">
                   <StarIcon />
                 </button>
@@ -40,16 +40,9 @@ export default {
     TransitionRoot
   },
   props: {
-    
-  },
-  setup() {
-    return {
-      person: {
-        name: 'Samuel David',
-        points: 20,
-        imageUrl: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80',
-      }
-    }
+    name: String,
+    points: Number,
+    imageUrl: String,
   }
 }
 </script>

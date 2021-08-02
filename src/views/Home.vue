@@ -64,7 +64,6 @@ export default {
   methods: {
     search() {
       this.selected = -1
-      this.images = []
       this.getSellers()
         .then(_ => {
           fetchImages(this.keyword, 3)

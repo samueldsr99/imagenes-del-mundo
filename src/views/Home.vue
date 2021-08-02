@@ -21,6 +21,7 @@
               :id="seller.id"
               :name="seller.name"
               :points="seller.points + (seller.selected ? 3 : 0)"
+              :pointsToWin="20"
               :imageUrl="seller.imageUrl"
               :value="`${seller.id}`"
               :onChange="handleSelect"

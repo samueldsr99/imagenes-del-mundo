@@ -16,18 +16,20 @@
             </div>
             <div class="w-full">
               <div class="float-right flex flex-row items-center gap-3">
-                <span class="points">{{ points }}</span>
-                <input
-                  type="radio"
-                  class="hidden"
-                  :name="radioName"
-                  :id="id"
-                  :value="value"
-                  @change="onChange"
-                />
-                <label :for="id" class="container">
-                  <StarIcon class="checkmark" />
-                </label>
+                <span class="points">{{ points }} / {{ pointsToWin }}</span>
+                <div>
+                  <input
+                    type="radio"
+                    class="hidden"
+                    :name="radioName"
+                    :id="id"
+                    :value="value"
+                    @change="onChange"
+                  />
+                  <label :for="id" class="container">
+                    <StarIcon class="checkmark" />
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -52,6 +54,7 @@ export default {
     radioName: String,
     name: String,
     points: Number,
+    pointsToWin: Number,
     imageUrl: String,
     id: Number,
     isChecked: Boolean,
@@ -72,7 +75,7 @@ export default {
   @apply float-left pl-2 text-xl text-gray-700 font-bold;
 }
 .points {
-  @apply font-bold text-yellow-400 text-xl;
+  @apply font-bold text-yellow-400 text-lg;
 }
 .checkmark {
   @apply

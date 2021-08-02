@@ -17,9 +17,17 @@
             <div class="w-full">
               <div class="float-right flex flex-row items-center gap-3">
                 <span class="points">{{ points }}</span>
-                <button type="button" class="upvote">
-                  <StarIcon />
-                </button>
+                <input
+                  type="radio"
+                  class="hidden"
+                  :name="radioName"
+                  :id="id"
+                  :value="value"
+                  @change="onChange"
+                />
+                <label :for="id" class="container">
+                  <StarIcon class="checkmark" />
+                </label>
               </div>
             </div>
           </div>
@@ -35,14 +43,23 @@ import { TransitionRoot  } from "@headlessui/vue";
 
 export default {
   name: 'ImageCard',
+  inheritAttrs: false,
   components: {
     StarIcon,
     TransitionRoot
   },
   props: {
+    radioName: String,
     name: String,
     points: Number,
     imageUrl: String,
+    id: Number,
+    isChecked: Boolean,
+    value: String,
+    onChange: {
+      type: Function,
+      default: (e) => {}
+    }
   }
 }
 </script>
@@ -52,17 +69,30 @@ export default {
   @apply relative mx-auto space-y-6 xl:space-y-10 h-96 w-full;
 }
 .name {
-  @apply float-left pl-2 text-xl text-gray-700;
+  @apply float-left pl-2 text-xl text-gray-700 font-bold;
 }
 .points {
   @apply font-bold text-yellow-400 text-xl;
 }
-.upvote {
+.checkmark {
   @apply
-    w-8 h-8 rounded-full
-    transition ease-in-out
-    active:bg-gray-100
-    transform hover:scale-125 hover:rotate-45 
-    bg-yellow-200 text-yellow-500;
+    w-8 h-8 rounded-full cursor-pointer
+    transition ease-in-out;
+}
+.container {
+  @apply text-gray-400;
+}
+input:checked + .container {
+  @apply text-yellow-500;
+  animation-name: upvote;
+  animation-duration: 170ms;
+}
+@keyframes upvote {
+  from {
+    transform: scale(1.25);
+  }
+  to {
+    transform: scale(0.8);
+  }
 }
 </style>

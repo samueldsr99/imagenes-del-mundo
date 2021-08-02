@@ -8,29 +8,39 @@
             placeholder="Buscar en la web..."
             :onClick="search"
           />
+          <button @click="handleUpvote">Votar</button>
         </div>
       </div>
     </template>
     <template v-slot:content>
       <div class="images-container">
-        <ImageCard
-          v-for="image in images" :key="image.id"
-          :name="image.name"
-          :points="image.points"
-          :imageUrl="image.imageUrl"
-        />
+        <div v-for="seller in sellers" :key="seller.id">
+          <div v-if="seller.imageUrl">
+            <ImageCard
+              radioName="contest-images"
+              :id="seller.id"
+              :name="seller.name"
+              :points="seller.points + (seller.selected ? 3 : 0)"
+              :imageUrl="seller.imageUrl"
+              :value="`${seller.id}`"
+              :onChange="handleSelect"
+            />
+            {{selected}} {{seller.id}}
+          </div>
+        </div>
       </div>
     </template>
   </BaseLayout>
 </template>
 
 <script>
-import {ref} from 'vue'
+import { ref } from 'vue'
+
 import BaseLayout from '@/layouts'
 import SearchInput from '@/components/SearchInput'
 import ImageCard from '@/components/ImageCard'
-
-import { fetchImages } from "../services";
+import { getAllSellers, upvote } from '@/services/alegra.js'
+import { fetchImages } from "@/services";
 
 export default {
   components: {
@@ -39,33 +49,82 @@ export default {
     ImageCard
   },
   setup() {
-    const images = ref([])
+    const sellers = ref([])
+    const selected = ref(-1)
 
     return {
-      images,
+      sellers,
+      selected,
       keyword: ''
     }
   },
+  mounted() {
+    this.getSellers()
+  },
   methods: {
     search() {
-      fetchImages(this.keyword, 3)
-        .then(result => {
-          console.log(result)
-          this.images = result.map(r => {
+      this.selected = -1
+      this.getSellers()
+        .then(_ => {
+          fetchImages(this.keyword, 3)
+            .then(result => {
+              this.sellers = result.map((r, i) => {
+                return {
+                  ...this.sellers[i],
+                  selected: false,
+                  imageUrl: r.urls.regular,
+                }
+              })
+            })
+            .catch(e => console.error(e))
+        })
+    },
+    getSellers() {
+      return getAllSellers()
+        .then(e => {
+          this.sellers = e.map(seller => {
             return {
-              id: r.id,
-              imageUrl: r.urls.regular,
-              name: 'Samuel David',
-              points: 12
+              id: seller.id,
+              name: seller.name,
+              points: parseInt(seller.observations),
+              imageUrl: '',
+              selected: false
             }
           })
+          Promise.resolve()
         })
-        .catch(e => console.error(e))
+    },
+    handleSelect(e) {
+      const value = parseInt(e.target.value)
+      this.selected = value
+      this.sellers = this.sellers.map(e => {
+        console.log(e.selected)
+        return { ...e, selected: e.id === value }
+      })
+      console.log(this.sellers)
+    },
+    handleUpvote() {
+      this.sellers = this.sellers.map(e => {
+        return {
+          ...e,
+          points: e.points + (e.selected ? 3 : 0),
+          selected: false
+        }
+      })
+      const selected = this.sellers.find(e => e.id === this.selected)
+      upvote(this.selected, selected.points)
+        .then(e => {
+          console.log(e)
+          this.selected = -1
+          this.sellers = this.sellers.map(e => {
+            return { ...e, selected: false, imageUrl: ''}
+          })
+        })
+        .catch(e => {
+          console.log(e)
+        })
     }
   },
-  computed: {
-    resultsAmount() { return this.images.length }
-  }
 }
 </script>
 

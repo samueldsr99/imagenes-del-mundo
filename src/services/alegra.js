@@ -22,7 +22,6 @@ export const getAllSellers = () => {
 }
 
 export const upvote = (sellerId, votes) => {
-  console.log('votes', votes)
   return fetch(`${BASE_URL}/sellers/${sellerId}`, {
     headers: headers,
     method: 'PUT',

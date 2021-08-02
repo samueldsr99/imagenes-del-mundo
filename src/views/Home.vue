@@ -98,31 +98,21 @@ export default {
       const value = parseInt(e.target.value)
       this.selected = value
       this.sellers = this.sellers.map(e => {
-        console.log(e.selected)
         return { ...e, selected: e.id === value }
       })
-      console.log(this.sellers)
     },
     handleUpvote() {
-      this.sellers = this.sellers.map(e => {
-        return {
-          ...e,
-          points: e.points + (e.selected ? 3 : 0),
-          selected: false
-        }
-      })
       const selected = this.sellers.find(e => e.id === this.selected)
-      upvote(this.selected, selected.points)
+      const points = selected.points + 3
+
+      this.sellers = this.sellers.map(e => {
+        return { ...e, imageUrl: '', selected: false }
+      })
+      upvote(this.selected, points)
         .then(e => {
-          console.log(e)
           this.selected = -1
-          this.sellers = this.sellers.map(e => {
-            return { ...e, selected: false, imageUrl: ''}
-          })
         })
-        .catch(e => {
-          console.log(e)
-        })
+        .catch(e => console.error(e))
     }
   },
 }

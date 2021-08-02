@@ -7,16 +7,29 @@
     enterTo="translate-y-0 opacity-100 sm:translate-x-0"
   >
     <div class="root">
-      <img :src="imageUrl" class="w-full h-80 rounded-2xl mx-auto object-cover" />
+      <img
+        :src="imageUrl"
+        :class="['image', selected ? 'opacity-40' : 'opacity-100']"
+      />
       <div class="flex justify-center items-center">
-        <div class="absolute top-64 h-28 bg-white w-11/12 rounded-md px-4 py-4 shadow-xl">
+        <div
+          :class="[
+            'card-container',
+            aboutToWin() ? 'bg-yellow-300' : 'bg-white'
+          ]"
+        >
           <div class="h-full flex flex-col justify-between items-center">
             <div class="w-full">
               <span class="name">{{ name }}</span>
             </div>
             <div class="w-full">
               <div class="float-right flex flex-row items-center gap-3">
-                <span class="points">{{ points }} / {{ pointsToWin }}</span>
+                <span
+                  :class="[
+                    'points',
+                    aboutToWin() ? 'text-yellow-50' : 'text-yellow-400'
+                  ]"
+                >{{ points }} / {{ pointsToWin }}</span>
                 <div>
                   <input
                     type="radio"
@@ -55,6 +68,7 @@ export default {
     name: String,
     points: Number,
     pointsToWin: Number,
+    selected: Boolean,
     imageUrl: String,
     id: Number,
     isChecked: Boolean,
@@ -62,6 +76,11 @@ export default {
     onChange: {
       type: Function,
       default: (e) => {}
+    }
+  },
+  methods: {
+    aboutToWin() {
+      return this.points >= this.pointsToWin && this.selected
     }
   }
 }
@@ -71,11 +90,17 @@ export default {
 .root {
   @apply relative mx-auto space-y-6 xl:space-y-10 h-96 w-full;
 }
+.image {
+  @apply w-full h-80 rounded-2xl mx-auto object-cover transition duration-200;
+}
+.card-container {
+  @apply absolute top-64 h-28 w-11/12 rounded-md px-4 py-4 shadow-xl;
+}
 .name {
   @apply float-left pl-2 text-xl text-gray-700 font-bold;
 }
 .points {
-  @apply font-bold text-yellow-400 text-lg;
+  @apply font-bold text-lg;
 }
 .checkmark {
   @apply

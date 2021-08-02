@@ -10,6 +10,7 @@
     "@headlessui/vue": "^1.4.0",
     "@heroicons/vue": "^1.0.3",
     "@tailwindcss/forms": "^0.3.3",
+    "base-64": "^1.0.0",
     "vue": "^3.0.5",
     "vue-router": "4"
   },

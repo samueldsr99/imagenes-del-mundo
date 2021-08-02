@@ -12,6 +12,9 @@
       </div>
     </template>
     <template v-slot:content>
+      <div v-if="!someCard" class="lg:w-1/2">
+        <TheRanking :sellers="sellers" pointsToWin="20" />
+      </div>
       <div class="images-container">
         <div v-for="seller in sellers" :key="seller.id">
           <div v-if="seller.imageUrl" class="relative flex flex-col items-center">
@@ -46,6 +49,7 @@ import BaseLayout from '@/layouts'
 import SearchInput from '@/components/SearchInput'
 import ImageCard from '@/components/ImageCard'
 import UpvoteButton from '@/components/UpvoteButton'
+import TheRanking from '@/components/TheRanking'
 import { getAllSellers, upvote } from '@/services/alegra.js'
 import { fetchImages } from "@/services"
 
@@ -54,7 +58,8 @@ export default {
     BaseLayout,
     SearchInput,
     ImageCard,
-    UpvoteButton
+    UpvoteButton,
+    TheRanking
   },
   setup() {
     const sellers = ref([])
@@ -76,11 +81,11 @@ export default {
         .then(_ => {
           fetchImages(this.keyword, 3)
             .then(result => {
-              this.sellers = result.map((r, i) => {
+              this.sellers = this.sellers.map((r, i) => {
                 return {
-                  ...this.sellers[i],
+                  ...r,
                   selected: false,
-                  imageUrl: r.urls.regular,
+                  imageUrl: result[i]?.urls?.regular || '',
                 }
               })
             })
@@ -103,10 +108,9 @@ export default {
         })
     },
     handleSelect(e) {
-      const value = parseInt(e.target.value)
-      this.selected = value
+      this.selected = parseInt(e.target.value)
       this.sellers = this.sellers.map(e => {
-        return { ...e, selected: e.id === value }
+        return { ...e, selected: e.id === this.selected }
       })
     },
     handleUpvote() {
@@ -114,7 +118,12 @@ export default {
       const points = selected.points + 3
 
       this.sellers = this.sellers.map(e => {
-        return { ...e, imageUrl: '', selected: false }
+        return {
+          ...e,
+          imageUrl: '',
+          points: e.id === this.selected ? points : e.points,
+          selected: false
+        }
       })
       upvote(this.selected, points)
         .then(e => {
@@ -123,6 +132,11 @@ export default {
         .catch(e => console.error(e))
     }
   },
+  computed: {
+    someCard() {
+      return !!this.sellers.find(e => e.imageUrl.length > 0)
+    },
+  }
 }
 </script>
 

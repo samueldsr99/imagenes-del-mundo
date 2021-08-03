@@ -20,7 +20,7 @@
         >
           <div class="h-full flex flex-col justify-between items-center">
             <div class="w-full">
-              <span class="name">{{ name }}</span>
+              <span :class="['name', aboutToWin() ? 'text-yellow-50' : 'text-gray-700']">{{ name }}</span>
             </div>
             <div class="w-full">
               <div class="float-right flex flex-row items-center gap-3">
@@ -97,7 +97,7 @@ export default {
   @apply absolute top-64 h-28 w-11/12 rounded-md px-4 py-4 shadow-xl;
 }
 .name {
-  @apply float-left pl-2 text-xl text-gray-700 font-bold;
+  @apply float-left pl-2 text-xl font-bold;
 }
 .points {
   @apply font-bold text-lg;
@@ -105,12 +105,12 @@ export default {
 .checkmark {
   @apply
     w-8 h-8 rounded-full cursor-pointer
-    transition ease-in-out;
+    transition ease-in-out transform;
 }
 .container {
-  @apply text-gray-400;
+  @apply text-gray-400 transform;
 }
-input:checked + .container {
+input:checked + label>.checkmark {
   @apply text-yellow-500;
   animation-name: upvote;
   animation-duration: 170ms;

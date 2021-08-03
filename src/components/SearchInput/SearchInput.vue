@@ -55,6 +55,6 @@ export default {
     block w-full pl-7 pr-12 rounded-md
     lg:text-xl sm:text-sm
     transition duration-500 ease-in-out
-    focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300;
+    focus:ring-2 focus:ring-gray-500 focus:border-gray-500 border-gray-300;
 }
 </style>

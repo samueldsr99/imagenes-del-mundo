@@ -5,11 +5,12 @@
       type="text"
       class="input"
       v-model="model"
+      :disabled="disabled"
       @keypress="onPressEnter"
       v-bind="$attrs"
     />
     <div class="absolute inset-y-0 right-0 flex items-center">
-      <button class="search-button" @click="onClick">
+      <button :disabled="true" class="search-button" @click="onClick">
         <SearchIcon class="w-5 h-5 text-gray-400" />
       </button>
     </div>
@@ -28,11 +29,12 @@ export default {
       type: Function,
       default: function() {}
     },
+    disabled: Boolean,
     model: String
   },
   methods: {
     onPressEnter(key) {
-      key.code === 'Enter' && this.onClick()
+      key.code === 'Enter' && !this.disabled && this.onClick()
     }
   }
 }

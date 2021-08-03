@@ -12,30 +12,35 @@
       </div>
     </template>
     <template v-slot:content>
-      <div v-if="!someCard" class="lg:w-1/2">
-        <TheRanking :sellers="sellers" pointsToWin="20" />
-      </div>
-      <div class="images-container">
-        <div v-for="seller in sellers" :key="seller.id">
-          <div v-if="seller.imageUrl" class="relative flex flex-col items-center">
-            <ImageCard
-              radioName="contest-images"
-              :id="seller.id"
-              :name="seller.name"
-              :points="seller.points + (seller.selected ? 3 : 0)"
-              :pointsToWin="20"
-              :imageUrl="seller.imageUrl"
-              :value="`${seller.id}`"
-              :selected="selected === seller.id"
-              :onChange="handleSelect"
-            />
-            <div
-              v-if="selected === seller.id"
-              class="w-44 absolute top-1/3"
-            >
-              <UpvoteButton @click="handleUpvote">Votar</UpvoteButton>
-            </div>
-          </div>
+      <div class="flex flex-col gap-10">
+        <div class="flex justify-end gap-3">
+          <BaseButton
+            variant="secondary"
+            class="float-right w-10"
+            @click="handleCleanPoints()"
+          >
+            <RefreshIcon class="h-6 w-6 mx-auto" />
+          </BaseButton>
+          <BaseButton
+            variant="secondary"
+            class="float-right w-10"
+            @click="cleanImages()"
+          >
+            <UserGroupIcon class="h-6 w-6 mx-auto" />
+          </BaseButton>
+        </div>
+        <div v-if="!loading && !someCard" class="lg:w-1/2">
+          <h1 class="text-4xl font-extrabold text-gray-700">Posiciones</h1>
+          <TheRanking :sellers="sellers" pointsToWin="20" />
+        </div>
+        <div>
+          <ImagesContainer
+            :sellers="sellers"
+            :loading="loading"
+            :selected="selected"
+            :handleSelect="handleSelect"
+            :handleUpvote="handleUpvote"
+          />
         </div>
       </div>
     </template>
@@ -44,29 +49,36 @@
 
 <script>
 import { ref } from 'vue'
-
+import {
+  UserGroupIcon,
+  RefreshIcon
+} from '@heroicons/vue/outline'
 import BaseLayout from '@/layouts'
 import SearchInput from '@/components/SearchInput'
-import ImageCard from '@/components/ImageCard'
-import UpvoteButton from '@/components/UpvoteButton'
+import BaseButton from '@/components/BaseButton'
 import TheRanking from '@/components/TheRanking'
-import { getAllSellers, upvote } from '@/services/alegra.js'
+import { getAllSellers, upvote, cleanPoints } from '@/services/alegra.js'
 import { fetchImages } from "@/services"
+import ImagesContainer from '@/views/Home/ImagesContainer.vue'
 
 export default {
   components: {
     BaseLayout,
     SearchInput,
-    ImageCard,
-    UpvoteButton,
-    TheRanking
+    BaseButton,
+    TheRanking,
+    ImagesContainer,
+    UserGroupIcon,
+    RefreshIcon
   },
   setup() {
     const sellers = ref([])
     const selected = ref(-1)
+    const loading = ref(false)
 
     return {
       sellers,
+      loading,
       selected,
       keyword: ''
     }
@@ -77,6 +89,7 @@ export default {
   methods: {
     search() {
       this.selected = -1
+      this.loading = true
       this.getSellers()
         .then(_ => {
           fetchImages(this.keyword, 3)
@@ -88,8 +101,22 @@ export default {
                   imageUrl: result[i]?.urls?.regular || '',
                 }
               })
+              this.loading = false
             })
             .catch(e => console.error(e))
+        })
+    },
+    cleanImages() {
+      this.sellers = this.sellers.map(e => { return { ...e, imageUrl: '' } })
+    },
+    handleCleanPoints() {
+      this.loading = true
+      this.sellers = this.sellers.map(e => {
+        return { ...e, points: 0 }
+      })
+      cleanPoints(this.sellers)
+        .then(_ => {
+          this.loading = false
         })
     },
     getSellers() {
@@ -126,10 +153,11 @@ export default {
         }
       })
       upvote(this.selected, points)
-        .then(e => {
-          this.selected = -1
-        })
+        .then(_ => this.selected = -1)
         .catch(e => console.error(e))
+    },
+    setLoading(value) {
+      this.loading = value
     }
   },
   computed: {
@@ -139,12 +167,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.images-container {
-  @apply
-    grid grid-cols-1
-    sm:grid-cols-2 sm:gap-x-2
-    lg:grid-cols-3 lg:gap-x-3;
-}
-</style>

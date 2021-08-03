@@ -33,3 +33,8 @@ export const upvote = (sellerId, votes) => {
     .then(r => Promise.resolve(r))
     .catch(e => Promise.reject(e))
 }
+
+export const cleanSeller = (sellerId) => upvote(sellerId, 0)
+
+export const cleanPoints = (sellers) =>
+  Promise.all(sellers.map(s => cleanSeller(s.id)))

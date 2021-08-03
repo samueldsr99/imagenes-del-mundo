@@ -95,6 +95,7 @@ export default {
 }
 .card-container {
   @apply absolute top-64 h-28 w-11/12 rounded-md px-4 py-4 shadow-xl;
+  min-width: 300px;
 }
 .name {
   @apply float-left pl-2 text-xl font-bold;

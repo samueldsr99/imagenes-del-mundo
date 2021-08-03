@@ -14,31 +14,23 @@
     </template>
     <template v-slot:content>
       <div class="flex flex-col gap-10">
-        <div class="flex justify-end gap-3">
-          <BaseButton
-            variant="secondary"
-            class="float-right w-11"
-            @click="handleCleanPoints()"
-          >
-            <RefreshIcon class="h-6 w-6 mx-auto" />
-          </BaseButton>
-          <BaseButton
-            variant="secondary"
-            class="float-right w-11"
-            @click="cleanImages()"
-          >
-            <UserGroupIcon class="h-6 w-6 mx-auto" />
-          </BaseButton>
-        </div>
+        <HomeHeader
+          :handleCleanPoints="handleCleanPoints"
+          :cleanImages="cleanImages"
+          :finished="finished"
+          :winnerName="winner?.name || ''"
+        />
         <div v-if="!loading && !someCard" class="lg:flex lg:gap-10">
           <div class="lg:w-1/2">
             <h1 class="text-4xl font-extrabold text-gray-700">Posiciones</h1>
             <TheRanking :sellers="sellers" pointsToWin="20" />
           </div>
           <Invoice
+            class="lg:w-1/2"
             v-if="finished && !invoiceIsEmpty"
             :data="invoiceResponse"
           />
+          <Skeleton variant="document" v-else-if="finished" />
         </div>
         <div v-if="!finished">
           <ImagesContainer
@@ -56,26 +48,29 @@
 
 <script>
 import { ref } from 'vue'
-import { UserGroupIcon, RefreshIcon } from '@heroicons/vue/outline'
+import { SparklesIcon } from '@heroicons/vue/outline'
 import BaseLayout from '@/layouts'
 import SearchInput from '@/components/SearchInput'
 import BaseButton from '@/components/BaseButton'
 import TheRanking from '@/components/TheRanking'
+import Skeleton from '@/components/Skeleton'
 import Invoice from '@/components/Invoice'
 import { getAllSellers, upvote, cleanPoints, createInvoice } from '@/services/alegra.js'
 import { fetchImages } from "@/services"
 import ImagesContainer from './ImagesContainer.vue'
+import HomeHeader from './HomeHeader.vue'
 
 export default {
   components: {
+    ImagesContainer,
+    HomeHeader,
     BaseLayout,
     SearchInput,
     BaseButton,
     TheRanking,
-    ImagesContainer,
-    UserGroupIcon,
-    RefreshIcon,
-    Invoice
+    Invoice,
+    Skeleton,
+    SparklesIcon
   },
   setup() {
     const sellers = ref([])
@@ -196,7 +191,10 @@ export default {
   watch: {
     finished: function(newValue, oldValue) {
       if (newValue && !oldValue) { // create invoice
-        this.handleCreateInvoice().then(cleanPoints(this.sellers))
+        this.handleCreateInvoice().then(() => {
+          cleanPoints(this.sellers)
+          console.log('reseted points')
+        })
       }
     }
   }

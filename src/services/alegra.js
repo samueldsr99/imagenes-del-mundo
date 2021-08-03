@@ -7,7 +7,7 @@ const USERNAME = import.meta.env.VITE_USERNAME;
 const PASSWORD = import.meta.env.VITE_PASSWORD;
 const BASE_URL = import.meta.env.VITE_ALEGRA_BASE_URL;
 
-const accessToken = base64.encode(`${USERNAME}:{PASSWORD}`)
+const accessToken = base64.encode(`${USERNAME}:${PASSWORD}`)
 
 const headers = new Headers()
 
@@ -38,3 +38,31 @@ export const cleanSeller = (sellerId) => upvote(sellerId, 0)
 
 export const cleanPoints = (sellers) =>
   Promise.all(sellers.map(s => cleanSeller(s.id)))
+
+export const createInvoice = ({
+  total,
+  winnerId,
+  date = new Date(),
+  dueDate = new Date(),
+  clientId = 1,
+  productId = 1
+}) => {
+  return fetch(`${BASE_URL}/invoices`, {
+    headers: headers,
+    method: 'POST',
+    body: JSON.stringify({
+      date: date,
+      dueDate: dueDate,
+      client: clientId,
+      seller: winnerId,
+      items: [{
+        id: productId,
+        price: total,
+        quantity: total
+      }]
+    })
+  })
+    .then(r => r.json())
+    .then(r => Promise.resolve(r))
+    .catch(e => Promise.reject(e))
+}

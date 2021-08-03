@@ -5,6 +5,7 @@
         <div class="lg:w-1/2 sm:w-full">
           <SearchInput
             v-model="keyword"
+            :disabled="finished"
             placeholder="Buscar en la web..."
             :onClick="search"
           />
@@ -29,11 +30,17 @@
             <UserGroupIcon class="h-6 w-6 mx-auto" />
           </BaseButton>
         </div>
-        <div v-if="!loading && !someCard" class="lg:w-1/2">
-          <h1 class="text-4xl font-extrabold text-gray-700">Posiciones</h1>
-          <TheRanking :sellers="sellers" pointsToWin="20" />
+        <div v-if="!loading && !someCard" class="lg:flex lg:gap-10">
+          <div class="lg:w-1/2">
+            <h1 class="text-4xl font-extrabold text-gray-700">Posiciones</h1>
+            <TheRanking :sellers="sellers" pointsToWin="20" />
+          </div>
+          <Invoice
+            v-if="finished && !invoiceIsEmpty"
+            :data="invoiceResponse"
+          />
         </div>
-        <div>
+        <div v-if="!finished">
           <ImagesContainer
             :sellers="sellers"
             :loading="loading"
@@ -49,17 +56,15 @@
 
 <script>
 import { ref } from 'vue'
-import {
-  UserGroupIcon,
-  RefreshIcon
-} from '@heroicons/vue/outline'
+import { UserGroupIcon, RefreshIcon } from '@heroicons/vue/outline'
 import BaseLayout from '@/layouts'
 import SearchInput from '@/components/SearchInput'
 import BaseButton from '@/components/BaseButton'
 import TheRanking from '@/components/TheRanking'
-import { getAllSellers, upvote, cleanPoints } from '@/services/alegra.js'
+import Invoice from '@/components/Invoice'
+import { getAllSellers, upvote, cleanPoints, createInvoice } from '@/services/alegra.js'
 import { fetchImages } from "@/services"
-import ImagesContainer from '@/views/Home/ImagesContainer.vue'
+import ImagesContainer from './ImagesContainer.vue'
 
 export default {
   components: {
@@ -69,18 +74,21 @@ export default {
     TheRanking,
     ImagesContainer,
     UserGroupIcon,
-    RefreshIcon
+    RefreshIcon,
+    Invoice
   },
   setup() {
     const sellers = ref([])
     const selected = ref(-1)
     const loading = ref(false)
+    const invoiceResponse = ref({})
 
     return {
       sellers,
       loading,
       selected,
-      keyword: ''
+      keyword: '',
+      invoiceResponse
     }
   },
   mounted() {
@@ -135,6 +143,14 @@ export default {
           Promise.resolve()
         })
     },
+    handleCreateInvoice() {
+      return createInvoice({ total: this.pointsSum, winnerId: this.winner.id })
+        .then(e => {
+          this.invoiceResponse = e
+          return Promise.resolve()
+        })
+        .catch(e => console.error(e))
+    },
     handleSelect(e) {
       this.selected = parseInt(e.target.value)
       this.sellers = this.sellers.map(e => {
@@ -157,14 +173,32 @@ export default {
         .then(_ => this.selected = -1)
         .catch(e => console.error(e))
     },
-    setLoading(value) {
-      this.loading = value
-    }
   },
   computed: {
     someCard() {
       return !!this.sellers.find(e => e.imageUrl.length > 0)
     },
+    finished() {
+      return !!this.sellers.find(e => e.points >= 20)
+    },
+    pointsSum() {
+      return this.sellers.reduce((prev, cur) => prev + cur.points, 0)
+    },
+    winner() {
+      return this.sellers.length
+        ? this.sellers.reduce((prev, cur) => cur.points > prev.points ? cur : prev)
+        : undefined
+    },
+    invoiceIsEmpty() {
+      return !Object.keys(this.invoiceResponse).length
+    }
+  },
+  watch: {
+    finished: function(newValue, oldValue) {
+      if (newValue && !oldValue) { // create invoice
+        this.handleCreateInvoice().then(cleanPoints(this.sellers))
+      }
+    }
   }
 }
 </script>

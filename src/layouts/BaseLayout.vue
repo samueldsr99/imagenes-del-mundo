@@ -10,16 +10,19 @@
       </div>
     </div>
   </div>
+  <TheFooter />
 </template>
 
 <script>
 import TheNavbar from '@/components/TheNavbar'
+import TheFooter from '@/components/TheFooter'
 
 export default {
   name: 'Layout',
   props: ['variant'],
   components: {
-    TheNavbar
+    TheNavbar,
+    TheFooter
   }
 }
 </script>

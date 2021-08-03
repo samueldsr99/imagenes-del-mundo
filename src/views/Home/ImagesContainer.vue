@@ -18,7 +18,15 @@
           v-if="selected === seller.id"
           class="w-44 absolute top-1/3"
         >
-          <BaseButton class="w-full" @click="handleUpvote">Votar</BaseButton>
+          <TransitionRoot
+            show
+            appear
+            enter="transform ease-in duration-300 transition"
+            enterFrom="scale-75 opacity-0"
+            enterTo="scale-100 opacity-100 "
+          >
+            <BaseButton class="w-full" @click="handleUpvote">Votar</BaseButton>
+          </TransitionRoot>
         </div>
       </div>
     </div>
@@ -26,6 +34,8 @@
 </template>
 
 <script>
+import { TransitionRoot } from '@headlessui/vue'
+
 import ImageCard from '@/components/ImageCard'
 import Skeleton from '@/components/Skeleton'
 import BaseButton from '@/components/BaseButton'
@@ -35,7 +45,8 @@ export default {
   components: {
     ImageCard,
     Skeleton,
-    BaseButton
+    BaseButton,
+    TransitionRoot
   },
   props: {
     sellers: {

@@ -70,7 +70,7 @@ export default {
     TheRanking,
     Invoice,
     Skeleton,
-    SparklesIcon
+    SparklesIcon,
   },
   setup() {
     const sellers = ref([])
@@ -86,9 +86,7 @@ export default {
       invoiceResponse
     }
   },
-  mounted() {
-    this.getSellers()
-  },
+  mounted() { this.getSellers() },
   methods: {
     search() {
       this.selected = -1
@@ -167,7 +165,7 @@ export default {
       upvote(this.selected, points)
         .then(_ => this.selected = -1)
         .catch(e => console.error(e))
-    },
+    }
   },
   computed: {
     someCard() {
@@ -193,7 +191,6 @@ export default {
       if (newValue && !oldValue) { // create invoice
         this.handleCreateInvoice().then(() => {
           cleanPoints(this.sellers)
-          console.log('reseted points')
         })
       }
     }

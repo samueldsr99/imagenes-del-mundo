@@ -73,7 +73,6 @@ import {
 
 const navigation = [
   { name: 'Inicio', href: '/', current: true },
-  { name: 'Opciones', href: '/options', current: false },
 ]
 
 export default {

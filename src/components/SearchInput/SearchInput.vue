@@ -10,7 +10,7 @@
       v-bind="$attrs"
     />
     <div class="absolute inset-y-0 right-0 flex items-center">
-      <button :disabled="true" class="search-button" @click="onClick">
+      <button :disabled="disabled" class="search-button" @click="onClick">
         <SearchIcon class="w-5 h-5 text-gray-400" />
       </button>
     </div>
@@ -29,7 +29,10 @@ export default {
       type: Function,
       default: function() {}
     },
-    disabled: Boolean,
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     model: String
   },
   methods: {

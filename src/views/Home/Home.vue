@@ -92,7 +92,7 @@ export default {
       this.loading = true
       this.getSellers()
         .then(_ => {
-          fetchImages(this.keyword, 3)
+          fetchImages(this.keyword, this.sellers.length)
             .then(result => {
               this.sellers = this.sellers.map((r, i) => {
                 return {

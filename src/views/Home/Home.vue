@@ -16,14 +16,14 @@
         <div class="flex justify-end gap-3">
           <BaseButton
             variant="secondary"
-            class="float-right w-10"
+            class="float-right w-11"
             @click="handleCleanPoints()"
           >
             <RefreshIcon class="h-6 w-6 mx-auto" />
           </BaseButton>
           <BaseButton
             variant="secondary"
-            class="float-right w-10"
+            class="float-right w-11"
             @click="cleanImages()"
           >
             <UserGroupIcon class="h-6 w-6 mx-auto" />

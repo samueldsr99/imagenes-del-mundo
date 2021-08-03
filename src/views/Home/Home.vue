@@ -90,6 +90,7 @@ export default {
     search() {
       this.selected = -1
       this.loading = true
+      this.cleanImages()
       this.getSellers()
         .then(_ => {
           fetchImages(this.keyword, this.sellers.length)
